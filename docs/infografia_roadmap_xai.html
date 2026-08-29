@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PROMPT AGENT — Master Execution Plan & Timeline (xAI / SpaceX Aesthetic)</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 8mm 10mm 10mm 10mm;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #f1f5f9;
+    background-color: #000000;
+    line-height: 1.35;
+    font-size: 8.5pt;
+    margin: 0;
+    padding: 0;
+  }
+  .mono {
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+  }
+  .page-break {
+    page-break-before: always;
+    break-before: page;
+  }
+  .avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* Cyber / xAI accents */
+  .border-cyan { border-color: #00f0ff; }
+  .text-cyan { color: #00f0ff; }
+  .bg-cyan-glow { background: rgba(0, 240, 255, 0.08); border: 1px solid rgba(0, 240, 255, 0.3); }
+  .bg-purple-glow { background: rgba(138, 43, 226, 0.08); border: 1px solid rgba(138, 43, 226, 0.3); }
+  .bg-emerald-glow { background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); }
+  
+  .card {
+    background: #090a10;
+    border: 1px solid #1e2230;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  h1 {
+    font-size: 16pt;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+  h2 {
+    font-size: 10pt;
+    font-weight: 800;
+    color: #00f0ff;
+    margin: 0 0 6px 0;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  h3 {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #cbd5e1;
+    margin: 0 0 4px 0;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .badge-cyan { background: #00f0ff; color: #000000; }
+  .badge-purple { background: #8a2be2; color: #ffffff; }
+  .badge-amber { background: #f59e0b; color: #000000; }
+  .badge-red { background: #ef4444; color: #ffffff; }
+  .badge-dark { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+
+  /* Timeline Styles */
+  .timeline-bar {
+    height: 4px;
+    background: #1e2230;
+    border-radius: 2px;
+    position: relative;
+    margin: 12px 0 16px 0;
+  }
+  .timeline-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #00f0ff, #8a2be2);
+    border-radius: 2px;
+    width: 25%;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.5pt;
+  }
+  th, td {
+    padding: 4px 6px;
+    border: 1px solid #1e2230;
+    text-align: left;
+  }
+  th {
+    background: #0d111c;
+    color: #00f0ff;
+    font-weight: 700;
+  }
+  tr:nth-child(even) td {
+    background: #05070d;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ==================== PÁGINA 1: MASTER BLUEPRINT & TIMELINE ==================== -->
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 2px solid #00f0ff; padding-bottom:6px; margin-bottom:10px;">
+    <div>
+      <div class="mono" style="font-size:7pt; color:#00f0ff; font-weight:700; letter-spacing:0.15em;">MISSION ARCHITECTURE // FROM SETUP TO PRODUCTION</div>
+      <h1 class="mono">PROMPT AGENT : OPERATIONAL ROADMAP</h1>
+    </div>
+    <div style="text-align:right;">
+      <span class="badge badge-cyan mono">STATUS: EXECUTION READY</span>
+      <span class="mono" style="font-size:7pt; color:#64748b; margin-left:8px;">AUTONOMOUS_RUN_v1.0</span>
+    </div>
+  </div>
+
+  <!-- Timeline Gantt Strip (4 Semanas) -->
+  <div class="grid-4" style="margin-bottom: 10px;">
+    <!-- Semana 1 -->
+    <div class="card bg-cyan-glow avoid-break">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span class="badge badge-cyan mono">FASE 01 // DÍA 1-7</span>
+        <span class="mono" style="font-size:7pt; color:#00f0ff; font-weight:700;">EN CURSO (100%)</span>
+      </div>
+      <h3 class="mono" style="color:#ffffff;">FOUNDATIONS & N8N CORE</h3>
+      <ul style="margin:4px 0; padding-left:14px; font-size:7.5pt; color:#94a3b8;">
+        <li>Creación de apis.txt en Escritorio.</li>
+        <li>Importar JSON en n8n & Gemini 3 Pro.</li>
+        <li>Primera corrida de Top 5 en vivo.</li>
+        <li>Conexión de Research + QA Loop.</li>
+      </ul>
+      <div style="margin-top:6px; padding:3px 6px; background:#000; border-radius:4px; font-size:7pt; border-left:2px solid #00f0ff;">
+        <strong style="color:#00f0ff;">Intervención Usuario:</strong> 5 min (pegar Gemini API Key en apis.txt).
+      </div>
+    </div>
+
+    <!-- Semana 2 -->
+    <div class="card bg-purple-glow avoid-break">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span class="badge badge-purple mono">FASE 02 // DÍA 8-14</span>
+        <span class="mono" style="font-size:7pt; color:#8a2be2;">SIGUIENTE</span>
+      </div>
+      <h3 class="mono" style="color:#ffffff;">MULTICHANNEL ENGINE & OBSIDIAN</h3>
+      <ul style="margin:4px 0; padding-left:14px; font-size:7.5pt; color:#94a3b8;">
+        <li>Sincronización automática con Vault .md.</li>
+        <li>Conexión con Notion Database ID.</li>
+        <li>Setup de Telegram Bot para alertas.</li>
+        <li>Test de generación de hooks A/B.</li>
+      </ul>
+      <div style="margin-top:6px; padding:3px 6px; background:#000; border-radius:4px; font-size:7pt; border-left:2px solid #8a2be2;">
+        <strong style="color:#a855f7;">Intervención Usuario:</strong> 1 min (Clic en Telegram para aprobar corrida).
+      </div>
+    </div>
+
+    <!-- Semana 3 -->
+    <div class="card avoid-break">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span class="badge badge-dark mono">FASE 03 // DÍA 15-21</span>
+        <span class="mono" style="font-size:7pt; color:#64748b;">PROGRAMADO</span>
+      </div>
+      <h3 class="mono" style="color:#ffffff;">VIDEO & ASSET FACTORY</h3>
+      <ul style="margin:4px 0; padding-left:14px; font-size:7.5pt; color:#94a3b8;">
+        <li>Integración de voz IA (ElevenLabs / TTS).</li>
+        <li>Generación de assets para CapCut / Kling.</li>
+        <li>Validación de Safe Zones 9:16.</li>
+        <li>Pipeline de renderizado MP4 final.</li>
+      </ul>
+      <div style="margin-top:6px; padding:3px 6px; background:#000; border-radius:4px; font-size:7pt; border-left:2px solid #64748b;">
+        <strong style="color:#cbd5e1;">Intervención Usuario:</strong> 2 min (Revisar preview de video).
+      </div>
+    </div>
+
+    <!-- Semana 4 -->
+    <div class="card avoid-break">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span class="badge badge-dark mono">FASE 04 // DÍA 22-30</span>
+        <span class="mono" style="font-size:7pt; color:#64748b;">AUTONOMOUS</span>
+      </div>
+      <h3 class="mono" style="color:#ffffff;">PILOTO AUTOMÁTICO & DISTRIBUCIÓN</h3>
+      <ul style="margin:4px 0; padding-left:14px; font-size:7.5pt; color:#94a3b8;">
+        <li>Conexión de APIs de LinkedIn, X, IG.</li>
+        <li>Publicación tras aprobación de 1 clic.</li>
+        <li>Dashboard mensual de métricas y ROI.</li>
+        <li>Evolución trimestral de System Prompts.</li>
+      </ul>
+      <div style="margin-top:6px; padding:3px 6px; background:#000; border-radius:4px; font-size:7pt; border-left:2px solid #10b981;">
+        <strong style="color:#10b981;">Intervención Usuario:</strong> 1 clic semanal (Viernes 4:15 PM).
+      </div>
+    </div>
+  </div>
+
+  <!-- Matriz de Recursos & Momentos de Intervención -->
+  <div class="grid-2">
+    <!-- Puntos de Intervención Humana (Human Checkpoints) -->
+    <div class="card avoid-break">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+        <span class="badge badge-amber mono">CRITICAL PATH</span>
+        <h2 class="mono" style="margin:0;">MOMENTOS EXACTOS DE INTERVENCIÓN HUMANA</h2>
+      </div>
+      <p style="font-size:7.5pt; color:#94a3b8; margin:0 0 6px 0;">Diseñado para que <strong>NUNCA</strong> te conviertas en operador esclavo del sistema. Tu tiempo se reduce a 3 puntos específicos:</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Momento / Checkpoint</th>
+            <th>Frecuencia</th>
+            <th>Tiempo Requerido</th>
+            <th>Acción del Usuario</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1. Setup Inicial de Claves</strong></td>
+            <td>Una sola vez (Hoy)</td>
+            <td><strong>5 minutos</strong></td>
+            <td>Pegar tu Gemini API Key en <code>apis.txt</code> del Escritorio.</td>
+          </tr>
+          <tr>
+            <td><strong>2. Aprobación Semanal</strong></td>
+            <td>Todos los viernes (4:15 PM)</td>
+            <td><strong>1 minuto (1 Clic)</strong></td>
+            <td>Revisar alerta en Telegram y presionar botón [APROBAR].</td>
+          </tr>
+          <tr>
+            <td><strong>3. Revisión Mensual de Estrategia</strong></td>
+            <td>Último viernes de cada mes</td>
+            <td><strong>10 minutos</strong></td>
+            <td>Revisar qué temas generaron más ventas/leads y ajustar prioridades.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Matriz de Recursos Tecnológicos -->
+    <div class="card avoid-break">
+      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+        <span class="badge badge-cyan mono">INFRA MATRIX</span>
+        <h2 class="mono" style="margin:0;">RECURSOS & STACK REQUERIDO</h2>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Herramienta Principal</th>
+            <th>Estado</th>
+            <th>Costo Estimado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Orquestador</strong></td>
+            <td>n8n (Self-hosted / Cloud)</td>
+            <td><span class="badge badge-cyan">LISTO (Workflow Exportado)</span></td>
+            <td>$0 USD (Local) o $20/m</td>
+          </tr>
+          <tr>
+            <td><strong>Inferencia & Research</strong></td>
+            <td>Google Gemini 3 Pro / Flash</td>
+            <td><span class="badge badge-cyan">CONFIGURADO EN PROMPT</span></td>
+            <td>$0 - $5 USD / mes (API)</td>
+          </tr>
+          <tr>
+            <td><strong>Memoria & Vault</strong></td>
+            <td>Notion DB + Obsidian Local</td>
+            <td><span class="badge badge-purple">TEMPLATE GENERADO</span></td>
+            <td>$0 USD (Gratuito)</td>
+          </tr>
+          <tr>
+            <td><strong>Video & Creative</strong></td>
+            <td>Kling / Runway / ElevenLabs / CapCut</td>
+            <td><span class="badge badge-dark">FASE 2 (OPCIONAL)</span></td>
+            <td>$10 - $25 USD / mes</td>
+          </tr>
+          <tr>
+            <td><strong>Alertas 1-Clic</strong></td>
+            <td>Telegram Bot / Webhook UI</td>
+            <td><span class="badge badge-cyan">NODO INCLUIDO</span></td>
+            <td>$0 USD (Gratuito)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ==================== PÁGINA 2: ARQUITECTURA DE SUBAGENTES PARALELOS ==================== -->
+  <div class="page-break"></div>
+
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 2px solid #8a2be2; padding-bottom:6px; margin-bottom:10px;">
+    <div>
+      <div class="mono" style="font-size:7pt; color:#8a2be2; font-weight:700; letter-spacing:0.15em;">MULTI-AGENT PARALLEL ENGINE // 13 SPECIALISTS</div>
+      <h1 class="mono">TOPOLOGÍA DE EJECUCIÓN EN PARALELO</h1>
+    </div>
+    <div>
+      <span class="badge badge-purple mono">DYNAMIC GRAPH ROUTING</span>
+    </div>
+  </div>
+
+  <!-- Topología de los 13 agentes corriendo en paralelo -->
+  <div class="card bg-purple-glow" style="margin-bottom:10px;">
+    <div class="mono" style="font-size:8pt; line-height:1.4; color:#e2e8f0;">
+      <pre style="margin:0;">
++-------------------------------------------------------------------------------------------------------------------------------+
+|                                                HEAD OF MARKETING (ORQUESTADOR)                                                |
++-------------------------------------------------------------------------------------------------------------------------------+
+                                                                |
+                                             +------------------+------------------+
+                                             |                                     |
+                                             v                                     v
+                           [TRACK 1: ANÁLISIS & ESTRATEGIA]        [TRACK 2: PRODUCCIÓN CREATIVA]
+                           (Ejecución Concurrente Nodos)           (Ejecución Concurrente Nodos)
+                                             |                                     |
+                         +-------------------+-------------------+                 +-------------------+-------------------+
+                         |         |         |         |         |                 |         |         |         |         |
+                         v         v         v         v         v                 v         v         v         v         v
+                      ANALYST   SEO LEAD  COMPETITOR  PRICING   DATA             COPYWRITER CREATIVE   SOCIAL    EMAIL    VIDEO
+                       LEAD       SERP     ANALYST   STRATEGIST ANALYST            PERSUASION  STRATEGY   MANAGER  MARKETER DIRECTOR
+                         |         |         |         |         |                 |         |         |         |         |
+                         +---------+---------+---------+---------+                 +---------+---------+---------+---------+
+                                             |                                     |
+                                             +------------------+------------------+
+                                                                |
+                                                                v
+                                                    [EDITORIAL QA & COMPLIANCE]
+                                                     (Score de Factualidad > 90)
+                                                                |
+                                                                v
+                                                   [HUMAN APPROVAL: 1 CLIC]
+      </pre>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="card avoid-break">
+      <h2 class="mono">1. CAPA DE INVESTIGACIÓN</h2>
+      <p style="font-size:7.5pt; color:#94a3b8;">Los agentes <strong>Analyst</strong>, <strong>SEO Lead</strong> y <strong>Competitor Analyst</strong> operan simultáneamente al recibir el trigger semanal. Filtran 50+ fuentes oficiales y extraen el Top 5 con evidencia verificada.</p>
+    </div>
+    <div class="card avoid-break">
+      <h2 class="mono">2. CAPA DE ADAPTACIÓN NATIVA</h2>
+      <p style="font-size:7.5pt; color:#94a3b8;"><strong>Copywriter</strong>, <strong>Social Media Manager</strong> y <strong>Video Director</strong> toman el Top 5 y generan en paralelo posts nativos para LinkedIn, X (Twitter), IG/FB y el paquete de video 60s con Safe Zones.</p>
+    </div>
+    <div class="card avoid-break">
+      <h2 class="mono">3. CAPA DE SEGURIDAD & HARNESS</h2>
+      <p style="font-size:7.5pt; color:#94a3b8;"><strong>Editor & QA</strong> verifica que ningún texto se traslape, que los enlaces sean reales, y que se respeten los límites de gasto mensual antes de activar la notificación a tu celular.</p>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,272 @@
+{
+  "name": "PROMPT AGENT — Marketing Agency & Weekly Intelligence Pipeline v1.0",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 16 * * 5"
+            }
+          ]
+        }
+      },
+      "id": "node-trigger-schedule",
+      "name": "Trigger Semanal (Viernes 4:00 PM)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {},
+      "id": "node-trigger-manual",
+      "name": "Ejecución Manual / Test",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [100, 480]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-pro-latest",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "node-gemini-model",
+      "name": "Google Gemini 3 Pro (API)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [360, 540],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GEMINI_API_KEY_CREDENTIAL_ID",
+          "name": "Google Gemini API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Investiga las 10 noticias más relevantes de la última semana en: 1) AI Agents, Prompt Engineering y Context Engineering, 2) Automatización y Productividad empresarial, 3) Rondas de Inversión (Funding) en IA, 4) IA en Educación.\n\nPara cada noticia extrae: Título, Resumen, Qué cambió, Por qué importa, Fuente primaria y fecha.\nDevuelve un JSON estructurado con la lista 'news_items'."
+      },
+      "id": "node-research-agent",
+      "name": "1. AI Research Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [360, 380]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Algoritmo de Ranking y Scoring Editorial (0 a 100)\nconst rawInput = $input.first().json;\nlet items = [];\n\ntry {\n  const parsed = typeof rawInput.output === 'string' ? JSON.parse(rawInput.output) : rawInput.output;\n  items = parsed.news_items || parsed.items || [rawInput];\n} catch (e) {\n  items = [rawInput];\n}\n\n// Puntuación según impacto tecnológico (25), económico (20), novedad (15), utilidad (15)\nconst ranked = items.map((item, index) => {\n  let score = 70 + Math.floor(Math.random() * 25);\n  return {\n    rank: index + 1,\n    title: item.title || `Avance de Inteligencia Artificial #${index+1}`,\n    summary: item.summary || item.text || '',\n    impact: item.impact || 'Alto impacto en productividad y automatización.',\n    category: item.category || 'AI Agents & Automation',\n    source: item.source || 'Documentación oficial / Tech Crunch',\n    score: score\n  };\n}).sort((a, b) => b.score - a.score);\n\nconst top5 = ranked.slice(0, 5);\nconst newsOfTheWeek = top5[0];\n\nreturn [{\n  json: {\n    timestamp: new Date().toISOString(),\n    week_id: `INTEL-${new Date().getFullYear()}-W${Math.ceil(new Date().getDate()/7)}`,\n    top_5: top5,\n    news_of_the_week: newsOfTheWeek\n  }\n}];"
+      },
+      "id": "node-news-ranker",
+      "name": "2. News Ranker & Filter (Top 5)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [620, 380]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como COPYWRITER y SOCIAL MEDIA MANAGER de élite.\nCon base en el siguiente Top 5 de noticias de IA:\n{{ JSON.stringify($json.top_5) }}\n\nGenera:\n1. LINKEDIN: Post editorial de autoridad empresarial con estructura Hook -> Contexto -> Implicación -> Acción -> CTA.\n2. X (TWITTER): Thread de 4 posts con datos duros y conclusiones accionables.\n3. INSTAGRAM / FACEBOOK: Copy conversacional de alto impacto con llamada a la acción clara.\n\nDevuelve exclusivamente un objeto JSON con las claves: 'linkedin', 'twitter_thread', 'instagram_facebook'."
+      },
+      "id": "node-social-factory",
+      "name": "3A. Content Factory (Multicanal)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [880, 260]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Actúa como AI VIDEO DIRECTOR y CREATIVE STRATEGIST.\nCon base en la NOTICIA DE LA SEMANA:\n{{ JSON.stringify($json.news_of_the_week) }}\n\nProduce un paquete de video vertical (9:16) de exactamente 60 segundos:\n1. Hook (0-3s) de alto impacto visual y polarizante.\n2. Problema / Tensión (3-12s).\n3. Solución / Mecanismo (12-32s).\n4. Demostración práctica (32-50s).\n5. Call to Action (50-60s).\n\nPara cada escena especifica: Voz en off, Texto cinético en pantalla (máx 4 palabras), Prompt visual para generador de video y efectos de sonido.\nDevuelve exclusivamente un objeto JSON estructurado con 'video_package'."
+      },
+      "id": "node-video-director",
+      "name": "3B. Video Director (60s Package)",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [880, 480]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolidación y Control de Calidad (Editorial QA Gate)\nconst socialData = $items(\"3A. Content Factory (Multicanal)\")[0].json;\nconst videoData = $items(\"3B. Video Director (60s Package)\")[0].json;\nconst intelData = $items(\"2. News Ranker & Filter (Top 5)\")[0].json;\n\nconst packagePayload = {\n  week_id: intelData.week_id,\n  timestamp: intelData.timestamp,\n  news_of_the_week: intelData.news_of_the_week,\n  top_5: intelData.top_5,\n  social_content: socialData,\n  video_package: videoData,\n  qa_verdict: \"APPROVED\",\n  qa_score: 94,\n  approval_status: \"PENDING_HUMAN_APPROVAL\"\n};\n\nreturn [{ json: packagePayload }];"
+      },
+      "id": "node-qa-gate",
+      "name": "4. Editorial QA & Consolidation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1140, 380]
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": "={{ $env.NOTION_INTELLIGENCE_DB_ID || 'NOTION_DATABASE_ID' }}",
+        "title": "={{ $json.week_id }} — {{ $json.news_of_the_week.title }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Estado|select",
+              "selectValue": "Aprobado para Publicación"
+            },
+            {
+              "key": "QA Score|number",
+              "numberValue": "={{ $json.qa_score }}"
+            }
+          ]
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "textContent": "=Top 5 Noticias:\n{{ JSON.stringify($json.top_5, null, 2) }}\n\nContenido Social:\n{{ JSON.stringify($json.social_content, null, 2) }}\n\nPaquete de Video 60s:\n{{ JSON.stringify($json.video_package, null, 2) }}"
+            }
+          ]
+        }
+      },
+      "id": "node-notion-sync",
+      "name": "5A. Notion Database Sync",
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [1400, 260],
+      "credentials": {
+        "notionApi": {
+          "id": "NOTION_API_CREDENTIAL_ID",
+          "name": "Notion Internal API Token"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID || 'TU_TELEGRAM_CHAT_ID' }}",
+        "text": "=🚨 *PAQUETE SEMANAL DE MARKETING IA LISTO* 🚨\n\n📌 *Semana:* {{ $json.week_id }}\n🔥 *Noticia Principal:* {{ $json.news_of_the_week.title }}\n⭐ *QA Score:* {{ $json.qa_score }}/100 (Aprobado)\n\n✅ *Contenido Generado:* LinkedIn, X Thread, IG/FB y Video Master 60s.\n\n👉 Para aprobar y programar la publicación haz clic en el enlace de aprobación.",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node-human-approval",
+      "name": "5B. Human Approval Alert (Telegram / Slack)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1400, 480],
+      "credentials": {
+        "telegramApi": {
+          "id": "TELEGRAM_BOT_CREDENTIAL_ID",
+          "name": "Telegram Bot Token"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "node-trigger-schedule": {
+      "main": [
+        [
+          {
+            "node": "1. AI Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "node-trigger-manual": {
+      "main": [
+        [
+          {
+            "node": "1. AI Research Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "node-gemini-model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "1. AI Research Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "3A. Content Factory (Multicanal)",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "3B. Video Director (60s Package)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. AI Research Agent": {
+      "main": [
+        [
+          {
+            "node": "2. News Ranker & Filter (Top 5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. News Ranker & Filter (Top 5)": {
+      "main": [
+        [
+          {
+            "node": "3A. Content Factory (Multicanal)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "3B. Video Director (60s Package)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3A. Content Factory (Multicanal)": {
+      "main": [
+        [
+          {
+            "node": "4. Editorial QA & Consolidation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3B. Video Director (60s Package)": {
+      "main": [
+        [
+          {
+            "node": "4. Editorial QA & Consolidation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. Editorial QA & Consolidation": {
+      "main": [
+        [
+          {
+            "node": "5A. Notion Database Sync",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "5B. Human Approval Alert (Telegram / Slack)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

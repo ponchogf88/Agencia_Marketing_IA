@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>PROMPT AGENT — Formulario de Stack & Recursos</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .chip {
+      transition: all 0.15s ease-in-out;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chip.active {
+      background-color: #00f0ff;
+      color: #000000;
+      border-color: #00f0ff;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+    .chip:hover:not(.active) {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.05);
+    }
+  </style>
+</head>
+<body class="bg-[#05070f] text-slate-100 antialiased p-3 md:p-6 max-w-4xl mx-auto font-sans">
+
+  <!-- Header Card (Estilo xAI / Cursor / Grok) -->
+  <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-6 mb-6 shadow-2xl relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/60 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold mb-3">
+          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span> SYSTEM_CONFIG // STACK_INVENTORY_v1.0
+        </div>
+        <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white font-mono">RECURSOS & STACK TECNOLÓGICO</h1>
+        <p class="text-slate-400 text-sm mt-1">
+          Marca los componentes activos de tu infraestructura. Al finalizar presiona <strong>"Copiar Configuración"</strong>.
+        </p>
+      </div>
+      <button onclick="copiarConfig()" class="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-5 py-3 rounded-xl shadow-lg shadow-cyan-500/20 transition flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+        <span>⚡</span> <span id="copyBtnText">Copiar Configuración</span>
+      </button>
+    </div>
+  </div>
+
+  <form id="stackForm" class="space-y-6">
+
+    <!-- 1. MOTOR DE INTELIGENCIA -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-400 font-mono flex items-center justify-center font-bold text-xs">01</span>
+          <h2 class="font-mono font-bold text-base text-white">MOTOR LLM & RAZONAMIENTO</h2>
+        </div>
+        <span class="text-xs font-mono text-cyan-400 bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/20">OBLIGATORIO</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Modelo Principal de Inferencia:</label>
+        <div class="flex flex-wrap gap-2" data-key="LLM_Principal">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm active" onclick="selectSingle(this)">Google Gemini 3 Pro (Recomendado)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Google AI Studio (API Gratuita)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Claude 3.7 Sonnet (Anthropic)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">OpenAI GPT-4o / o3-mini</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">DeepSeek R1 / Grok 2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. ORQUESTADOR & EJECUCIÓN -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-purple-500/20 text-purple-400 font-mono flex items-center justify-center font-bold text-xs">02</span>
+          <h2 class="font-mono font-bold text-base text-white">ORQUESTADOR (N8N)</h2>
+        </div>
+        <span class="text-xs font-mono text-purple-400 bg-purple-950/40 px-2 py-0.5 rounded border border-purple-500/20">PIPELINE CORE</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Tipo de Despliegue de n8n:</label>
+        <div class="flex flex-wrap gap-2" data-key="n8n_Deployment">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm active" onclick="selectSingle(this)">n8n Cloud Oficial</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">VPS (Hostinger / DigitalOcean / Hetzner)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Docker Local en mi PC / Mac</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Railway / Render</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. BASE DE CONOCIMIENTO & MEMORIA -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 font-mono flex items-center justify-center font-bold text-xs">03</span>
+          <h2 class="font-mono font-bold text-base text-white">MEMORIA & BASE DE CONOCIMIENTO</h2>
+        </div>
+        <span class="text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-500/20">PERSISTENCIA</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Destinos de Sincronización (Multi-selección):</label>
+        <div class="flex flex-wrap gap-2" data-type="multi" data-key="Storage_Destinations">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3.5 py-2 text-sm active" onclick="toggleMulti(this)">Notion Database (Notas estructuradas)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3.5 py-2 text-sm active" onclick="toggleMulti(this)">Obsidian Vault (Archivos .md locales)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3.5 py-2 text-sm" onclick="toggleMulti(this)">Google Sheets (Tabla de respaldo rápido)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3.5 py-2 text-sm" onclick="toggleMulti(this)">Supabase / PostgreSQL</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. CANAL DE APROBACIÓN EN 1 CLIC -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-amber-500/20 text-amber-400 font-mono flex items-center justify-center font-bold text-xs">04</span>
+          <h2 class="font-mono font-bold text-base text-white">HUMAN-IN-THE-LOOP (APROBACIÓN)</h2>
+        </div>
+        <span class="text-xs font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-500/20">CONTROL TOTAL</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Canal de Alerta para tu Celular / PC:</label>
+        <div class="flex flex-wrap gap-2" data-key="Approval_Channel">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm active" onclick="selectSingle(this)">Telegram Bot (Recomendado - 1 Clic con botones)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Discord Webhook con Embed interactivo</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Slack Channel</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-4 py-2 text-sm" onclick="selectSingle(this)">Correo Electrónico (Gmail)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. GENERADORES DE VIDEO & VOZ -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-pink-500/20 text-pink-400 font-mono flex items-center justify-center font-bold text-xs">05</span>
+          <h2 class="font-mono font-bold text-base text-white">VIDEO & VOZ IA (FASE 2)</h2>
+        </div>
+        <span class="text-xs font-mono text-pink-400 bg-pink-950/40 px-2 py-0.5 rounded border border-pink-500/20">CREATIVE ASSETS</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Herramientas que planeas conectar (Multi-selección):</label>
+        <div class="flex flex-wrap gap-2" data-type="multi" data-key="Video_Voice_Tools">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">ElevenLabs (Voz ultra-realista)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">CapCut Desktop / Pro</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm" onclick="toggleMulti(this)">Kling 1.5 / Runway Gen-3</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm" onclick="toggleMulti(this)">Hailuo / Minimax</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm" onclick="toggleMulti(this)">Veo (Google)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm" onclick="toggleMulti(this)">Descript</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. REDES SOCIALES DESTINO -->
+    <div class="bg-[#0d111c] border border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded bg-blue-500/20 text-blue-400 font-mono flex items-center justify-center font-bold text-xs">06</span>
+          <h2 class="font-mono font-bold text-base text-white">REDES SOCIALES DESTINO (FASE 3)</h2>
+        </div>
+        <span class="text-xs font-mono text-blue-400 bg-blue-950/40 px-2 py-0.5 rounded border border-blue-500/20">DISTRIBUCIÓN</span>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono text-slate-400 mb-2 uppercase">Canales de Publicación Programada:</label>
+        <div class="flex flex-wrap gap-2" data-type="multi" data-key="Social_Channels">
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">LinkedIn (Perfil / Empresa)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">X (Twitter)</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">Instagram Reels / Feed</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">Facebook Page</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">TikTok</div>
+          <div class="chip border border-slate-700 bg-slate-900/60 rounded-xl px-3 py-1.5 text-xs md:text-sm active" onclick="toggleMulti(this)">YouTube Shorts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="sticky bottom-4 bg-[#0d111c]/90 border border-slate-800 rounded-2xl p-4 shadow-2xl flex items-center justify-between backdrop-blur-md">
+      <div class="text-xs font-mono text-slate-400">
+        STATUS: <span class="text-cyan-400 font-bold" id="counter">6/6 Módulos Configurados</span>
+      </div>
+      <button onclick="copiarConfig()" class="bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold px-6 py-2.5 rounded-xl shadow-lg transition">
+        Copiar Configuración Lista
+      </button>
+    </div>
+
+  </form>
+
+  <script>
+    function selectSingle(el) {
+      el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function toggleMulti(el) {
+      el.classList.toggle('active');
+    }
+
+    function copiarConfig() {
+      let text = "### STACK TECNOLÓGICO SELECCIONADO:\n\n";
+      document.querySelectorAll('[data-key]').forEach(container => {
+        const key = container.getAttribute('data-key');
+        const activeChips = Array.from(container.querySelectorAll('.chip.active')).map(c => c.textContent.trim());
+        text += `* **${key}**: ${activeChips.join(', ') || 'Ninguno'}\n`;
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtnText');
+        btn.textContent = "¡Copiado con Éxito! ✓";
+        setTimeout(() => btn.textContent = "Copiar Configuración", 2500);
+      });
+    }
+  </script>
+</body>
+</html>

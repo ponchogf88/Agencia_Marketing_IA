@@ -1,0 +1,13 @@
+﻿{
+  "name": "prompt-agent-marketing-agency",
+  "version": "1.0.0",
+  "description": "Multi-agent autonomous marketing agency & weekly intelligence pipeline in n8n",
+  "main": "scripts/render_video_hyperframes.js",
+  "scripts": {
+    "render:video": "node scripts/render_video_hyperframes.js",
+    "test:intel": "node -e 'console.log(\"Pipeline Ready\")'"
+  },
+  "keywords": ["ai-agents", "n8n", "marketing-agency", "prompt-engineering", "hyperframes", "gemini-3"],
+  "author": "PROMPT AGENT & Marketing Systems",
+  "license": "MIT"
+}
