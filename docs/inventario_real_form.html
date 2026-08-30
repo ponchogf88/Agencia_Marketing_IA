@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>PROMPT AGENT — Inventario Real Interactivo</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .chip {
+      transition: all 0.15s ease-in-out;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chip.active {
+      background-color: #3b82f6;
+      color: #ffffff;
+      border-color: #3b82f6;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+    }
+    .chip:hover:not(.active) {
+      border-color: #60a5fa;
+      background: rgba(59, 130, 246, 0.05);
+    }
+    .badge-state {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body class="bg-transparent text-[var(--foreground)] antialiased p-2 md:p-4 max-w-4xl mx-auto font-sans">
+
+  <!-- Header Card -->
+  <div class="bg-[var(--card)] text-[var(--foreground)] border border-[var(--border)] rounded-2xl p-5 mb-5 shadow-sm">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-xs font-mono font-bold mb-2">
+          <span>🎯</span> INVENTARIO REAL // 12 BLOQUES CLICKEABLES
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold text-[var(--foreground)]">Inventario Real del Sistema</h1>
+        <p class="text-[var(--muted-foreground)] text-xs md:text-sm mt-1">
+          Solo haz clic en tus respuestas. Al final presiona <strong>"Copiar Inventario Listo"</strong> y pégalo en el chat.
+        </p>
+      </div>
+      <button onclick="copiarInventario()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2.5 rounded-xl shadow-md transition flex items-center justify-center gap-2 text-sm whitespace-nowrap">
+        <span>📋</span> <span id="copyBtnTop">Copiar Inventario Listo</span>
+      </button>
+    </div>
+  </div>
+
+  <form id="inventoryForm" class="space-y-5">
+
+    <!-- 1. N8N -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-orange-500/20 text-orange-500 flex items-center justify-center font-bold text-xs font-mono">1</span>
+        <h2 class="font-bold text-base">1. n8n (Orquestador)</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">1.1 ¿Dónde tienes n8n?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="1.1_Donde_n8n">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Mi PC (Local)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">n8n Cloud Oficial</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">VPS / Servidor Propio</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Docker</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No sé / Aún no lo tengo abierto</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">1.2 ¿Puedes entrar actualmente a n8n y ver la pantalla de Workflows?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="1.2_Acceso_Workflows">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">1.3 y 1.4 ¿Tienes algún workflow creado o funcionando?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="1.3_Workflows_Creados">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí, ya tengo funcionando</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No, ninguno</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">1.5 ¿Ya conectaste Gemini con n8n?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="1.5_Gemini_en_n8n">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. GOOGLE / GEMINI -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-xs font-mono">2</span>
+        <h2 class="font-bold text-base">2. Google & Gemini</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">2.1 ¿Tienes una cuenta de Google para todo este proyecto?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="2.1_Cuenta_Google">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí (mi cuenta principal)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No, usaré otra</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">2.2 & 2.3 ¿Qué suscripción de Gemini tienes?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="2.2_Plan_Gemini">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Google AI Pro (Gemini Advanced)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Google AI Ultra</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Ninguno / Gratuito</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">2.4 ¿Puedes entrar a Google AI Studio?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="2.4_AI_Studio">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">2.5 ¿Ya tienes tu Gemini API Key lista?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="2.5_API_Key">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No, falta generarla</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">2.6 ¿Tienes Gemini Spark?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="2.6_Gemini_Spark">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No sé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. NOTION -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-indigo-500/20 text-indigo-500 flex items-center justify-center font-bold text-xs font-mono">3</span>
+        <h2 class="font-bold text-base">3. Notion</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">3.1 ¿Tienes cuenta de Notion?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="3.1_Cuenta_Notion">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">3.2 y 3.3 ¿Espacio para PROMPT AGENT y diseño de plantilla?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="3.2_Estructura_Notion">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí, diseña tú la estructura desde cero</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Ya tengo una base creada</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Omitir Notion por ahora</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. OBSIDIAN -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-purple-500/20 text-purple-500 flex items-center justify-center font-bold text-xs font-mono">4</span>
+        <h2 class="font-bold text-base">4. Obsidian</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">4.1 ¿Tienes Obsidian instalado y dónde está tu Vault?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="4.1_Obsidian_Vault">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí, en PC Local</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Sí, en OneDrive / Google Drive</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No lo tengo instalado / No sé</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">4.3 ¿Quieres que las investigaciones semanales terminen como Markdown (.md) en tu Vault?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="4.3_Markdown_Vault">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. GITHUB -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-slate-500/20 text-slate-500 flex items-center justify-center font-bold text-xs font-mono">5</span>
+        <h2 class="font-bold text-base">5. GitHub</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">5.1 ¿Tienes cuenta de GitHub y repositorio creado?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="5.1_GitHub_Estado">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Tengo cuenta y ya creé el repo</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Tengo cuenta pero NO he creado el repo en la web</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No tengo cuenta / No sé</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. MODELOS QUE REALMENTE TIENES -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-xs font-mono">6</span>
+        <h2 class="font-bold text-base">6. Modelos de IA que REALMENTE Tienes (Suscripciones Activas)</h2>
+      </div>
+      <p class="text-xs text-[var(--muted-foreground)]">Haz clic para marcar SÍ o NO:</p>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" data-type="group-checks">
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="ChatGPT Plus">
+          <span class="text-xs md:text-sm font-medium">ChatGPT Plus</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="Claude Pro">
+          <span class="text-xs md:text-sm font-medium">Claude Pro</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="Gemini Pro/Ultra">
+          <span class="text-xs md:text-sm font-medium">Gemini Pro/Ultra</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="Perplexity Pro">
+          <span class="text-xs md:text-sm font-medium">Perplexity Pro</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="Grok">
+          <span class="text-xs md:text-sm font-medium">Grok / SuperGrok</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+        <div class="chip border border-[var(--border)] rounded-xl p-3 flex items-center justify-between" onclick="toggleMulti(this)" data-group="6_IA" data-val="Kie.ai">
+          <span class="text-xs md:text-sm font-medium">Kie.ai</span>
+          <span class="indicator text-xs font-bold text-gray-400">NO</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 & 8. IMÁGENES Y VIDEO -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-pink-500/20 text-pink-500 flex items-center justify-center font-bold text-xs font-mono">7-8</span>
+        <h2 class="font-bold text-base">7 y 8. Imágenes, Video & Marca</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">7.1 y 7.2 Imágenes Automáticas y API:</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="7_Imagenes">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí, generar imágenes automáticas (con aprobación)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No tengo generador de imágenes de pago aún</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">7.3 y 7.4 ¿Logo y manual de marca?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="7.3_Logo_Manual">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Ya tengo logo y colores listos</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">No tengo, quiero crearlo desde cero</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">8.1 Alcance del Video de 60s:</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="8.1_Alcance_Video">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Primero quiero probar (Guion + Storyboard + Prompts)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Quiero el MP4 terminado de una vez</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">8.3 ¿El sistema decide el estilo del video según la noticia?</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="8.3_Estilo_Video">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Sí (Recomendado)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">No, estilo fijo siempre</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9, 10, 11, 12. REDES, INTERVENCIÓN, MARCA Y DINERO -->
+    <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 shadow-sm space-y-4">
+      <div class="flex items-center gap-2 pb-2 border-b border-[var(--border)]">
+        <span class="w-6 h-6 rounded bg-teal-500/20 text-teal-500 flex items-center justify-center font-bold text-xs font-mono">9-12</span>
+        <h2 class="font-bold text-base">9 a 12. Redes, Intervención, Marca & Presupuesto</h2>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">9. Redes activas (Marca las que tengas):</label>
+        <div class="flex flex-wrap gap-2" data-type="multi" data-key="9_Redes">
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">Instagram</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">Facebook</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">LinkedIn</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">X (Twitter)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">TikTok</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3 py-1 text-xs active" onclick="toggleMulti(this)">YouTube</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">10. Nivel de intervención deseado:</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="10_Intervencion">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Solo aprobar / rechazar (1 Clic)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Aprobar + revisar video</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Aprobar + modificar cosas cuando quiera</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">11. Idioma y Región:</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="11_Idioma">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Español México / LATAM</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Español Internacional</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Inglés</div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-[var(--muted-foreground)] mb-2 uppercase">12. Presupuesto mensual y Filosofía:</label>
+        <div class="flex flex-wrap gap-2" data-type="single" data-key="12_Presupuesto">
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm active" onclick="selectSingle(this)">Mejor resultado posible dentro de un presupuesto razonable ($500 - $1,500 MXN)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Lo más barato posible ($0 - $300 MXN / Tiers gratis)</div>
+          <div class="chip border border-[var(--border)] rounded-xl px-3.5 py-1.5 text-xs md:text-sm" onclick="selectSingle(this)">Presupuesto pro ($1,500 - $3,500 MXN)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="sticky bottom-3 bg-[var(--card)] border border-[var(--border)] rounded-2xl p-4 shadow-xl flex items-center justify-between backdrop-blur-md">
+      <div class="text-xs text-[var(--muted-foreground)]">
+        💡 <span id="statusTxt">Formulario listo</span>
+      </div>
+      <button onclick="copiarInventario()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-lg transition">
+        Copiar Inventario Listo
+      </button>
+    </div>
+
+  </form>
+
+  <script>
+    function selectSingle(el) {
+      el.parentElement.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function toggleMulti(el) {
+      el.classList.toggle('active');
+      const ind = el.querySelector('.indicator');
+      if (ind) {
+        if (el.classList.contains('active')) {
+          ind.textContent = 'SÍ';
+          ind.className = 'indicator text-xs font-bold text-emerald-500';
+        } else {
+          ind.textContent = 'NO';
+          ind.className = 'indicator text-xs font-bold text-gray-400';
+        }
+      }
+    }
+
+    function compilar() {
+      let out = "### INVENTARIO REAL CONFIRMADO:\n\n";
+      document.querySelectorAll('[data-type="single"]').forEach(c => {
+        const key = c.getAttribute('data-key');
+        const act = c.querySelector('.chip.active');
+        out += `* **${key}**: ${act ? act.textContent.trim() : 'No sé'}\n`;
+      });
+      document.querySelectorAll('[data-type="multi"]').forEach(c => {
+        const key = c.getAttribute('data-key');
+        const acts = Array.from(c.querySelectorAll('.chip.active')).map(x => x.textContent.trim());
+        out += `* **${key}**: ${acts.join(', ') || 'Ninguno'}\n`;
+      });
+      out += "\n* **Modelos de IA Activos**:\n";
+      document.querySelectorAll('[data-group="6_IA"]').forEach(chip => {
+        const name = chip.getAttribute('data-val');
+        const isAct = chip.classList.contains('active') ? "Sí" : "No";
+        out += `  - ${name}: ${isAct}\n`;
+      });
+      return out;
+    }
+
+    function copiarInventario() {
+      const text = compilar();
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtnTop');
+        btn.textContent = "¡Copiado con Éxito! ✓";
+        setTimeout(() => btn.textContent = "Copiar Inventario Listo", 2500);
+      });
+    }
+  </script>
+</body>
+</html>
