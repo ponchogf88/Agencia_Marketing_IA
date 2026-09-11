@@ -13,8 +13,8 @@
 
 ### 1. Clone & Configure Environment
 ```bash
-git clone https://github.com/YOUR_USERNAME/prompt-agent-marketing-agency.git
-cd prompt-agent-marketing-agency
+git clone https://github.com/ponchogf88/Agencia_Marketing_IA.git
+cd Agencia_Marketing_IA
 cp .env.example .env
 ```
 Add your **Google Gemini API Key** and optional Notion / Telegram keys inside `.env`.
@@ -88,3 +88,4 @@ Every Friday at 4:00 PM, the system will:
 
 ## 📄 License
 MIT © 2026 PROMPT AGENT & Marketing Systems.
+
