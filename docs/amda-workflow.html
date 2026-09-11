@@ -1,0 +1,636 @@
+<title>AMDA · Workflow de Agentes</title>
+<style>
+  :root {
+    --bg: #f5f7f6;
+    --surface: #ffffff;
+    --surface-2: #eef2f0;
+    --ink: #16292b;
+    --ink-soft: #4a5f5e;
+    --ink-faint: #7d908e;
+    --line: #d5ddda;
+    --accent: #0d7a64;
+    --accent-soft: #d7ebe5;
+    --accent-ink: #0a5d4d;
+    --human: #b06a12;
+    --human-soft: #f7e8d2;
+    --no: #b03a2e;
+    --spine: #b9c8c4;
+    --mono: "SF Mono", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1716; --surface: #16211f; --surface-2: #1d2b28;
+      --ink: #e4ecea; --ink-soft: #9fb3b0; --ink-faint: #6d827f;
+      --line: #2a3a37; --accent: #35b295; --accent-soft: #10352d;
+      --accent-ink: #6fd3ba; --human: #e0a04a; --human-soft: #3a2c14;
+      --no: #e07a6e; --spine: #33453f;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1716; --surface: #16211f; --surface-2: #1d2b28;
+    --ink: #e4ecea; --ink-soft: #9fb3b0; --ink-faint: #6d827f;
+    --line: #2a3a37; --accent: #35b295; --accent-soft: #10352d;
+    --accent-ink: #6fd3ba; --human: #e0a04a; --human-soft: #3a2c14;
+    --no: #e07a6e; --spine: #33453f;
+  }
+  :root[data-theme="light"] {
+    --bg: #f5f7f6; --surface: #ffffff; --surface-2: #eef2f0;
+    --ink: #16292b; --ink-soft: #4a5f5e; --ink-faint: #7d908e;
+    --line: #d5ddda; --accent: #0d7a64; --accent-soft: #d7ebe5;
+    --accent-ink: #0a5d4d; --human: #b06a12; --human-soft: #f7e8d2;
+    --no: #b03a2e; --spine: #b9c8c4;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.55;
+    margin: 0; padding: 0 20px 80px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+
+  /* ---------- header ---------- */
+  header { padding: 56px 0 8px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent);
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 44px); font-weight: 800;
+    letter-spacing: -.02em; margin: 8px 0 10px; text-wrap: balance;
+  }
+  .lede { color: var(--ink-soft); max-width: 62ch; margin: 0 0 22px; }
+  .stats { display: flex; flex-wrap: wrap; gap: 10px; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 999px; padding: 6px 14px; font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .stat b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  /* ---------- orchestrator ---------- */
+  .orchestrator {
+    margin: 34px 0 10px; background: var(--ink); color: var(--bg);
+    border-radius: 14px; padding: 20px 24px;
+    display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .orchestrator .badge {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .1em;
+    background: var(--accent); color: #fff; border-radius: 6px;
+    padding: 4px 9px; white-space: nowrap;
+  }
+  .orchestrator h2 { margin: 0 0 4px; font-size: 17px; }
+  .orchestrator p { margin: 0; font-size: 14px; opacity: .82; max-width: 62ch; }
+  .orchestrator .stack-row { margin-top: 10px; }
+
+  /* ---------- section heads ---------- */
+  .phase { margin-top: 44px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 4px; }
+  .phase-num {
+    font-family: var(--mono); font-size: 13px; color: var(--accent);
+    letter-spacing: .12em;
+  }
+  .phase-head h2 { font-size: 22px; letter-spacing: -.01em; margin: 0; }
+  .phase-sub { color: var(--ink-faint); font-size: 14px; margin: 2px 0 20px; }
+
+  /* spine layout */
+  .rail { position: relative; padding-left: 34px; }
+  .rail::before {
+    content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px;
+    width: 2px; background: var(--spine); border-radius: 2px;
+  }
+  .node { position: relative; }
+  .node::before {
+    content: ""; position: absolute; left: -30px; top: 22px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--accent); border: 3px solid var(--bg);
+  }
+
+  /* ---------- agent card ---------- */
+  .agent {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 18px 20px 16px;
+  }
+  .agent-top { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .agent-id {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-faint);
+    letter-spacing: .06em;
+  }
+  .agent h3 { margin: 0; font-size: 17px; font-weight: 700; }
+  .agent-role { font-size: 13px; color: var(--ink-faint); }
+  .agent ul { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: var(--ink-soft); }
+  .agent li { margin: 3px 0; }
+  .agent li::marker { color: var(--accent); }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .chip {
+    font-size: 12px; border-radius: 6px; padding: 4px 10px;
+    background: var(--surface-2); color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .chip b { font-weight: 600; color: var(--ink); }
+  .chip.human {
+    background: var(--human-soft); border-color: transparent; color: var(--human);
+  }
+  .chip.human b { color: var(--human); }
+
+  /* stack chips */
+  .stack-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; align-items: center; }
+  .stack-label {
+    font-family: var(--mono); font-size: 10px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--ink-faint); margin-right: 2px;
+  }
+  .chip.tool {
+    background: transparent; border: 1px solid var(--accent);
+    color: var(--accent-ink); font-family: var(--mono); font-size: 11.5px;
+  }
+  .orchestrator .chip.tool { border-color: var(--accent); color: var(--accent-soft); background: transparent; }
+
+  /* ---------- handoff connector ---------- */
+  .handoff {
+    margin: 10px 0 10px 6px; padding: 8px 0 8px 16px;
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.5;
+    color: var(--accent-ink);
+  }
+  .handoff .arrow { color: var(--accent); font-weight: 700; }
+  .handoff-label {
+    font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-faint); display: block; margin-bottom: 2px;
+    font-family: var(--mono);
+  }
+
+  /* parallel tracks in phase 4 */
+  .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 10px 0; }
+  @media (max-width: 720px) { .tracks { grid-template-columns: 1fr; } }
+  .track {
+    border: 1px dashed var(--line); border-radius: 14px; padding: 12px;
+    background: color-mix(in srgb, var(--surface) 45%, transparent);
+  }
+  .track-label {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-faint); margin: 2px 0 10px 6px;
+  }
+  .track .agent { margin-bottom: 0; }
+  .track .handoff { margin: 8px 0 8px 2px; padding-left: 10px; }
+
+  /* ---------- layers (con qué se construye) ---------- */
+  .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  @media (max-width: 720px) { .layers { grid-template-columns: 1fr; } }
+  .layer {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px 18px;
+  }
+  .layer .layer-n {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
+    color: var(--accent); text-transform: uppercase;
+  }
+  .layer h3 { margin: 6px 0 6px; font-size: 16px; }
+  .layer p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+  .layer .tools { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* ---------- models table ---------- */
+  .models { margin-top: 16px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .model-row {
+    display: grid; grid-template-columns: 1.1fr 1.4fr 1fr; gap: 14px;
+    padding: 13px 18px; background: var(--surface);
+    border-bottom: 1px solid var(--line); font-size: 13.5px; align-items: baseline;
+  }
+  .model-row:last-child { border-bottom: none; }
+  .model-row.head {
+    background: var(--surface-2); font-family: var(--mono); font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .model-name { font-weight: 700; }
+  .model-name small { display: block; font-weight: 400; font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+  .model-use { color: var(--ink-soft); }
+  .model-cost { font-family: var(--mono); font-size: 12.5px; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) {
+    .model-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* ---------- checklist claude projects ---------- */
+  .check-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 16px; }
+  .check {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+    padding: 13px 16px; display: grid; grid-template-columns: 92px 1fr; gap: 14px;
+    font-size: 14px; align-items: start;
+  }
+  @media (max-width: 560px) { .check { grid-template-columns: 1fr; gap: 4px; } }
+  .verdict {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    padding: 3px 8px; border-radius: 6px; text-align: center; white-space: nowrap;
+    align-self: start; margin-top: 2px;
+  }
+  .verdict.yes { background: var(--accent-soft); color: var(--accent-ink); }
+  .verdict.half { background: var(--human-soft); color: var(--human); }
+  .verdict.no { background: transparent; border: 1px solid var(--no); color: var(--no); }
+  .check b { display: block; margin-bottom: 2px; }
+  .check span.body { color: var(--ink-soft); }
+
+  /* ---------- rules / prio ---------- */
+  .rules { margin-top: 52px; }
+  .rules h2, .prio h2, .build h2 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; }
+  .rules-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  @media (max-width: 720px) { .rules-grid { grid-template-columns: 1fr; } }
+  .rule {
+    background: var(--surface); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 16px; font-size: 14px; color: var(--ink-soft);
+  }
+  .rule b { color: var(--ink); display: block; margin-bottom: 3px; }
+
+  .build { margin-top: 52px; }
+
+  .loops {
+    margin-top: 18px; background: var(--accent-soft);
+    border-radius: 12px; padding: 16px 20px;
+  }
+  .loops h3 { margin: 0 0 8px; font-size: 14px; color: var(--accent-ink);
+    font-family: var(--mono); letter-spacing: .1em; text-transform: uppercase; font-weight: 600; }
+  .loops p { margin: 4px 0; font-size: 14px; color: var(--ink); }
+  .loops .arrow { font-family: var(--mono); color: var(--accent-ink); font-weight: 700; }
+
+  .prio { margin-top: 52px; }
+  .prio-table { margin-top: 16px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .prio-row {
+    display: grid; grid-template-columns: 56px 1fr 1.2fr; gap: 14px;
+    padding: 13px 18px; background: var(--surface);
+    border-bottom: 1px solid var(--line); font-size: 14px; align-items: baseline;
+  }
+  .prio-row:last-child { border-bottom: none; }
+  .prio-row.head {
+    background: var(--surface-2); font-family: var(--mono); font-size: 11px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--ink-faint);
+  }
+  .prio-n {
+    font-family: var(--mono); font-weight: 700; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .prio-agents { font-weight: 600; }
+  .prio-why { color: var(--ink-soft); }
+  @media (max-width: 640px) {
+    .prio-row { grid-template-columns: 40px 1fr; }
+    .prio-why { grid-column: 2; }
+    .prio-row.head .prio-why { display: none; }
+  }
+
+  footer { margin-top: 60px; font-size: 13px; color: var(--ink-faint); }
+  footer a { color: var(--accent-ink); }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">AMDA · Agencia de Marketing Digital y Automatización</div>
+  <h1>Workflow de agentes de IA</h1>
+  <p class="lede">El flujo completo de la agencia operado por agentes: conseguir clientes, vender, entregar el servicio y retener cuentas. Cada tarjeta es un agente con <strong>su stack de herramientas</strong>; la línea entre tarjetas muestra <strong>exactamente qué entrega al siguiente</strong>.</p>
+  <div class="stats">
+    <span class="stat"><b>16</b> agentes</span>
+    <span class="stat"><b>5</b> fases</span>
+    <span class="stat"><b>3</b> capas de construcción</span>
+    <span class="stat">🟠 = interviene un humano</span>
+  </div>
+</header>
+
+<!-- ═══════════ CAPAS ═══════════ -->
+<section class="build" style="margin-top:36px">
+  <h2>Con qué se construye cada agente</h2>
+  <p class="phase-sub">Todos los agentes se arman con las mismas 3 capas. La tarjeta de cada agente indica su combinación exacta.</p>
+  <div class="layers">
+    <div class="layer">
+      <div class="layer-n">Capa 1 · Cerebro</div>
+      <h3>Claude Projects</h3>
+      <p>Un Proyecto de Claude por rol de agente (y uno por cliente). Las instrucciones son el "brief permanente"; la base de conocimiento guarda guías de 1–3 páginas. Para los agentes que corren solos, el mismo brief se usa vía API de Claude dentro de Make.</p>
+      <div class="tools"><span class="chip tool">Claude Pro/Team</span><span class="chip tool">Claude API</span></div>
+    </div>
+    <div class="layer">
+      <div class="layer-n">Capa 2 · Manos</div>
+      <h3>Make + canales</h3>
+      <p>Make ejecuta: escucha disparadores (mensaje nuevo, pago, fecha), llama al cerebro, y mueve el resultado al canal correcto. El CRM en Notion o Airtable es la memoria compartida de todos los agentes.</p>
+      <div class="tools"><span class="chip tool">Make</span><span class="chip tool">Notion/Airtable CRM</span><span class="chip tool">WhatsApp API</span><span class="chip tool">Gmail</span><span class="chip tool">Calendly</span><span class="chip tool">Stripe</span></div>
+    </div>
+    <div class="layer">
+      <div class="layer-n">Capa 3 · Producción</div>
+      <h3>IA generativa</h3>
+      <p>Claude escribe todo el texto. Nano Banana 2 Lite genera y edita imágenes. Gemini Omni Flash genera y edita video. Flujo combinado: imagen con Nano Banana → animarla a video con Omni Flash.</p>
+      <div class="tools"><span class="chip tool">Claude</span><span class="chip tool">Nano Banana 2 Lite</span><span class="chip tool">Gemini Omni Flash</span><span class="chip tool">Canva</span></div>
+    </div>
+  </div>
+
+  <div class="models">
+    <div class="model-row head"><span>Modelo</span><span>Para qué lo usa AMDA</span><span>Costo / acceso</span></div>
+    <div class="model-row">
+      <span class="model-name">Claude<small>claude.ai · API</small></span>
+      <span class="model-use">Copys, propuestas, diagnósticos, reportes, chatbots. El cerebro de los 16 agentes.</span>
+      <span class="model-cost">Plan Pro/Team + API por consumo</span>
+    </div>
+    <div class="model-row">
+      <span class="model-name">Nano Banana 2 Lite<small>gemini-3.1-flash-lite-image</small></span>
+      <span class="model-use">Imágenes para posts, anuncios y miniaturas: genera en ~4 s y permite edición. El más barato para volumen diario.</span>
+      <span class="model-cost">~$0.034 USD/imagen 1K · AI Studio / Gemini API</span>
+    </div>
+    <div class="model-row">
+      <span class="model-name">Gemini Omni Flash<small>gemini-omni-flash-preview</small></span>
+      <span class="model-use">Reels y video-anuncios: genera video desde texto/imagen y se edita conversando ("cambia el fondo, mantén el personaje").</span>
+      <span class="model-cost">$0.10 USD/seg de video · Gemini app, Flow, API</span>
+    </div>
+  </div>
+</section>
+
+<div class="orchestrator">
+  <span class="badge">AGENTE 0</span>
+  <div>
+    <h2>Orquestador — Director de Operaciones</h2>
+    <p>Supervisa las 5 fases. Asigna trabajo según la etapa de cada cliente, detecta leads o proyectos estancados (&gt;24 h), mantiene el CRM como fuente única de verdad y escala al humano las decisiones sensibles: descuentos, quejas, cancelaciones. También es dueño del mantenimiento trimestral de los Proyectos de Claude.</p>
+    <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Make (router + watchdog)</span><span class="chip tool">Notion/Airtable CRM</span><span class="chip tool">Claude API</span><span class="chip tool">Alertas WhatsApp/Slack</span></div>
+  </div>
+</div>
+
+<!-- ═══════════ FASE 1 ═══════════ -->
+<section class="phase">
+  <div class="phase-head"><span class="phase-num">FASE 1</span><h2>Adquisición — conseguir clientes</h2></div>
+  <p class="phase-sub">Llenar el embudo con prospectos que de verdad necesitan automatización.</p>
+  <div class="rail">
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">01</span><h3>Prospector</h3><span class="agent-role">· investigación de mercado</span></div>
+      <ul>
+        <li>Busca negocios que encajan con el cliente ideal (pymes, e-commerce, profesionistas con procesos manuales)</li>
+        <li>Investiga cada uno: sitio, redes, reseñas, señales de dolor (no responden mensajes, sin agenda en línea)</li>
+        <li>Puntúa cada lead: encaje + señal de necesidad</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Google Maps/Places API</span><span class="chip tool">Apify o PhantomBuster</span><span class="chip tool">Claude API (califica)</span><span class="chip tool">Make → CRM</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> programado, diario o semanal</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega →</span><span class="arrow">▼</span> lista de leads calificados en el CRM: negocio, contacto, canal, dolor detectado y puntuación</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">02</span><h3>Outreach</h3><span class="agent-role">· primer contacto</span></div>
+      <ul>
+        <li>Redacta mensajes personalizados por lead (email, WhatsApp o DM) citando el dolor detectado</li>
+        <li>Envía la secuencia: contacto inicial + 2–3 seguimientos espaciados</li>
+        <li>Clasifica respuestas: interesado / no interesado / sin respuesta</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project "AMDA-Outreach"</span><span class="chip tool">Gmail o Instantly</span><span class="chip tool">WhatsApp Business API</span><span class="chip tool">Make (secuencias)</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> leads nuevos del Prospector</span><span class="chip human"><b>Humano:</b> respuestas agresivas o bajas</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega →</span><span class="arrow">▼</span> leads interesados con el historial completo de conversación</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">03</span><h3>Calificador</h3><span class="agent-role">· SDR conversacional</span></div>
+      <ul>
+        <li>Conversa con el interesado y califica: presupuesto, autoridad, necesidad, urgencia (BANT)</li>
+        <li>Responde preguntas frecuentes sobre servicios y precios base</li>
+        <li>Agenda la llamada de diagnóstico en Calendly</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Chatbot: WhatsApp API + Claude API</span><span class="chip tool">Chatwoot o ManyChat</span><span class="chip tool">Calendly</span><span class="chip tool">Make → CRM</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> respuesta de interés</span><span class="chip human"><b>Humano:</b> tickets altos o quien pida hablar con persona</span></div>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ═══════════ FASE 2 ═══════════ -->
+<section class="phase">
+  <div class="phase-head"><span class="phase-num">FASE 2</span><h2>Venta</h2></div>
+  <p class="phase-sub">Del brief del prospecto al contrato firmado y anticipo pagado.</p>
+  <div class="rail">
+
+    <div class="handoff" style="margin-top:0"><span class="handoff-label">recibe de fase 1 →</span><span class="arrow">▼</span> cita agendada + brief del prospecto: quién es, qué necesita, presupuesto, urgencia</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">04</span><h3>Diagnóstico</h3><span class="agent-role">· auditoría del negocio</span></div>
+      <ul>
+        <li>Audita al prospecto antes de la llamada: presencia digital, embudo actual, procesos automatizables, competencia</li>
+        <li>Documenta 3–5 oportunidades concretas con impacto estimado</li>
+        <li>Genera el guion de la llamada de ventas</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project "AMDA-Diagnóstico" (con búsqueda web)</span><span class="chip tool">Plantilla Google Docs</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> al agendarse la cita</span><span class="chip human"><b>Humano:</b> hace la llamada con este material</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega →</span><span class="arrow">▼</span> auditoría + oportunidades priorizadas + guion de llamada</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">05</span><h3>Propuestas</h3><span class="agent-role">· cotización</span></div>
+      <ul>
+        <li>Convierte diagnóstico + notas de la llamada en propuesta formal: alcance, entregables, tiempos, precio</li>
+        <li>Genera el documento con plantilla de marca</li>
+        <li>Prepara contrato y enlace de pago del anticipo (Stripe)</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project "AMDA-Propuestas"</span><span class="chip tool">Canva o Google Slides</span><span class="chip tool">Stripe Payment Links</span><span class="chip tool">Documenso/PandaDoc (firma)</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> fin de la llamada · propuesta en &lt;24 h</span><span class="chip human"><b>Humano:</b> aprueba precios fuera de tarifario</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega →</span><span class="arrow">▼</span> propuesta lista + contrato + enlace de pago</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">06</span><h3>Cierre</h3><span class="agent-role">· seguimiento y firma</span></div>
+      <ul>
+        <li>Envía la propuesta y da seguimiento a los 2, 5 y 8 días</li>
+        <li>Responde objeciones frecuentes con argumentos aprobados</li>
+        <li>Gestiona firma y confirma pago del anticipo</li>
+        <li>Si no cierra: registra el motivo y lo mueve a nutrición (reintento en 60–90 días)</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Make (secuencia + webhooks de Stripe)</span><span class="chip tool">Claude API (objeciones)</span><span class="chip tool">Gmail/WhatsApp</span><span class="chip tool">CRM</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> propuesta lista</span><span class="chip human"><b>Humano:</b> descuentos y cambios de alcance</span></div>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ═══════════ FASE 3 ═══════════ -->
+<section class="phase">
+  <div class="phase-head"><span class="phase-num">FASE 3</span><h2>Onboarding</h2></div>
+  <p class="phase-sub">Del pago confirmado al expediente completo, listo para ejecutar.</p>
+  <div class="rail">
+
+    <div class="handoff" style="margin-top:0"><span class="handoff-label">recibe de fase 2 →</span><span class="arrow">▼</span> contrato firmado + anticipo pagado + expediente de venta (promesas, condiciones, fechas)</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">07</span><h3>Onboarding</h3><span class="agent-role">· alta del cliente</span></div>
+      <ul>
+        <li>Envía bienvenida y formulario: accesos a redes, sitio, logos, cuentas publicitarias</li>
+        <li>Verifica que todos los accesos funcionen</li>
+        <li>Crea el expediente: carpeta en Drive, tablero de proyecto, canal de comunicación</li>
+        <li><strong>Crea el Proyecto de Claude del cliente</strong> con sus 3 documentos base: voz de marca, audiencia y alcance contratado</li>
+        <li>Agenda la llamada de kickoff</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Tally/Typeform</span><span class="chip tool">Make</span><span class="chip tool">Google Drive</span><span class="chip tool">Calendly</span><span class="chip tool">Claude Project por cliente</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> pago del anticipo confirmado</span><span class="chip human"><b>Humano:</b> llama si no entregan accesos en 5 días</span></div>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ═══════════ FASE 4 ═══════════ -->
+<section class="phase">
+  <div class="phase-head"><span class="phase-num">FASE 4</span><h2>Entrega del servicio</h2></div>
+  <p class="phase-sub">Un plan mensual que se divide en dos rutas paralelas y converge en control de calidad.</p>
+  <div class="rail">
+
+    <div class="handoff" style="margin-top:0"><span class="handoff-label">recibe de fase 3 →</span><span class="arrow">▼</span> expediente completo: accesos verificados, marca, objetivos, alcance + Proyecto de Claude del cliente creado</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">08</span><h3>Estratega</h3><span class="agent-role">· plan de trabajo</span></div>
+      <ul>
+        <li>Traduce el alcance contratado en plan mensual con KPIs medibles</li>
+        <li>Define calendario de contenido, campañas de pauta y automatizaciones a construir</li>
+        <li>Divide el plan en tareas asignables a los ejecutores</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project del cliente</span><span class="chip tool">Notion (plan y tareas)</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> fin de onboarding + cada inicio de mes</span><span class="chip human"><b>Humano:</b> aprueba el plan del primer mes</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega en paralelo →</span><span class="arrow">▼</span> brief de contenido (ruta A) · especificación técnica (ruta B)</div>
+
+    <div class="tracks">
+      <div class="track">
+        <div class="track-label">Ruta A · Marketing</div>
+        <div class="agent">
+          <div class="agent-top"><span class="agent-id">09</span><h3>Contenido</h3></div>
+          <ul>
+            <li>Redacta copies: posts, anuncios, emails, guiones de reels, con el tono de cada marca</li>
+          </ul>
+          <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project del cliente (voz + 3–5 ejemplos)</span></div>
+          <div class="meta"><span class="chip human"><b>Humano:</b> temas sensibles (salud, legal, finanzas)</span></div>
+        </div>
+        <div class="handoff"><span class="arrow">▼</span> calendario con textos listos + pieza gráfica o video que necesita cada post</div>
+        <div class="agent">
+          <div class="agent-top"><span class="agent-id">10</span><h3>Diseño</h3></div>
+          <ul>
+            <li>Genera imágenes con Nano Banana 2 Lite (~4 s, $0.034/imagen) y las monta en plantillas de marca en Canva</li>
+            <li>Genera reels y video-anuncios con Gemini Omni Flash ($0.10/seg): imagen de producto → video animado, edición por conversación</li>
+          </ul>
+          <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Nano Banana 2 Lite (imágenes)</span><span class="chip tool">Gemini Omni Flash (video)</span><span class="chip tool">Canva (plantillas de marca)</span></div>
+          <div class="meta"><span class="chip human"><b>Humano:</b> el cliente aprueba la 1.ª tanda</span></div>
+        </div>
+        <div class="handoff"><span class="arrow">▼</span> paquete de creativos (imagen + video) vinculados al calendario</div>
+        <div class="agent">
+          <div class="agent-top"><span class="agent-id">12</span><h3>Publicación y Pauta</h3></div>
+          <ul>
+            <li>Programa y publica; lanza campañas Meta/Google; monitorea gasto y optimiza</li>
+          </ul>
+          <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Metricool o Meta Business Suite</span><span class="chip tool">Meta Ads / Google Ads</span><span class="chip tool">Make (programación)</span></div>
+          <div class="meta"><span class="chip human"><b>Humano:</b> cambios de presupuesto &gt;20 %</span></div>
+        </div>
+      </div>
+      <div class="track">
+        <div class="track-label">Ruta B · Automatización</div>
+        <div class="agent">
+          <div class="agent-top"><span class="agent-id">11</span><h3>Automatización</h3></div>
+          <ul>
+            <li>Construye lo vendido: chatbots de WhatsApp/Instagram, flujos en Make, CRM, agenda en línea, recordatorios, seguimiento de leads del cliente</li>
+            <li>Documenta cada flujo construido</li>
+          </ul>
+          <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Make (escenarios del cliente)</span><span class="chip tool">Claude API (chatbots)</span><span class="chip tool">WhatsApp Business API</span><span class="chip tool">Supabase (si necesita BD)</span><span class="chip tool">Claude Code (lógica compleja)</span></div>
+          <div class="meta"><span class="chip"><b>Disparador:</b> especificación técnica recibida</span><span class="chip human"><b>Humano:</b> permisos que el cliente no ha dado</span></div>
+        </div>
+        <div class="handoff"><span class="arrow">▼</span> automatizaciones en ambiente de prueba + documentación</div>
+      </div>
+    </div>
+
+    <div class="handoff"><span class="handoff-label">ambas rutas convergen →</span><span class="arrow">▼</span> campañas activas + automatizaciones en prueba + bitácoras</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">13</span><h3>QA</h3><span class="agent-role">· control de calidad</span></div>
+      <ul>
+        <li>Revisa todo antes de llegar al cliente: ortografía, consistencia visual, enlaces funcionando</li>
+        <li>Prueba automatizaciones de punta a punta: mensaje, cita y pago de prueba</li>
+        <li>Aprueba a producción o regresa con correcciones al agente responsable</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Checklist en Notion</span><span class="chip tool">Claude (revisión de copy vs. guía de voz)</span><span class="chip tool">Make (pruebas end-to-end)</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> cada entregable terminado</span><span class="chip human"><b>Humano:</b> tras 2 rechazos del mismo entregable</span></div>
+    </div></div>
+
+  </div>
+</section>
+
+<!-- ═══════════ FASE 5 ═══════════ -->
+<section class="phase">
+  <div class="phase-head"><span class="phase-num">FASE 5</span><h2>Reporte y retención</h2></div>
+  <p class="phase-sub">Demostrar resultados, renovar y hacer crecer cada cuenta.</p>
+  <div class="rail">
+
+    <div class="handoff" style="margin-top:0"><span class="handoff-label">recibe de fase 4 →</span><span class="arrow">▼</span> entregables aprobados en producción + checklist de QA</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">14</span><h3>Analítica y Reportes</h3></div>
+      <ul>
+        <li>Recolecta métricas de todos los canales: alcance, leads, conversaciones del chatbot, citas, ventas atribuidas, gasto</li>
+        <li>Compara contra los KPIs del plan</li>
+        <li>Genera el reporte mensual en lenguaje claro: qué se hizo, qué resultó, qué sigue</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Make (recolecta métricas)</span><span class="chip tool">Looker Studio (dashboard)</span><span class="chip tool">Claude (redacta el reporte)</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> semanal interno · mensual al cliente</span><span class="chip human"><b>Humano:</b> cuenta en rojo 2 semanas seguidas</span></div>
+    </div></div>
+
+    <div class="handoff"><span class="handoff-label">entrega →</span><span class="arrow">▼</span> reporte mensual + semáforo de salud (verde / amarillo / rojo) + recomendaciones</div>
+
+    <div class="node"><div class="agent">
+      <div class="agent-top"><span class="agent-id">15</span><h3>Éxito del Cliente</h3><span class="agent-role">· account manager</span></div>
+      <ul>
+        <li>Envía el reporte y agenda la revisión mensual; atiende el día a día</li>
+        <li>Mide satisfacción (NPS trimestral)</li>
+        <li>Detecta upsells y gestiona renovaciones antes del vencimiento</li>
+        <li>Pide testimonios y referidos a clientes satisfechos</li>
+      </ul>
+      <div class="stack-row"><span class="stack-label">Stack</span><span class="chip tool">Claude Project del cliente</span><span class="chip tool">Gmail/WhatsApp</span><span class="chip tool">Tally (NPS)</span><span class="chip tool">CRM</span></div>
+      <div class="meta"><span class="chip"><b>Disparador:</b> reporte mensual + eventos de la cuenta</span><span class="chip human"><b>Humano:</b> riesgo de cancelación y renovaciones</span></div>
+    </div></div>
+
+  </div>
+
+  <div class="loops">
+    <h3>El ciclo se cierra</h3>
+    <p><span class="arrow">↩</span> <strong>Upsells y renovaciones</strong> regresan al Agente 05 (Propuestas) como nueva venta.</p>
+    <p><span class="arrow">↩</span> <strong>Referidos</strong> regresan al Agente 01 (Prospector) como leads nuevos.</p>
+    <p><span class="arrow">↩</span> <strong>Feedback del cliente</strong> regresa al Agente 08 (Estratega) para ajustar el plan del siguiente mes.</p>
+  </div>
+</section>
+
+<!-- ═══════════ CLAUDE PROJECTS ═══════════ -->
+<section class="build">
+  <h2>Metodología Claude Projects aplicada a AMDA</h2>
+  <p class="phase-sub">Auditoría honesta del workflow contra las reglas del curso: qué ya cumplía, qué faltaba y cómo se aplica.</p>
+  <div class="check-grid">
+    <div class="check"><span class="verdict yes">CUMPLÍA</span><div><b>Un proyecto por asunto</b><span class="body">El workflow ya separa un agente por función y prohíbe mezclar clientes. Se traduce directo: un Proyecto de Claude por rol (AMDA-Outreach, AMDA-Propuestas…) y un Proyecto por cliente para contenido y estrategia. Nunca un mega-proyecto.</span></div></div>
+    <div class="check"><span class="verdict yes">CUMPLÍA</span><div><b>Precisión sobre volumen</b><span class="body">La regla de handoffs ("nada avanza sin su entregable, tight y específico") es la misma lógica: documentos de 1–3 páginas por conocimiento, no manuales de 40. La guía de voz de 3 páginas le gana al manual completo.</span></div></div>
+    <div class="check"><span class="verdict half">A MEDIAS</span><div><b>Instrucciones como brief permanente</b><span class="body">El workflow define roles pero no incluía el brief de cada agente. Cada Proyecto necesita la plantilla del curso: ROL / PARA QUÉ ES / CÓMO RESPONDER / QUÉ ASUMIR / NUNCA — incluida la regla de "no preguntes, asume razonable, decláralo y avanza".</span></div></div>
+    <div class="check"><span class="verdict no">FALTABA</span><div><b>Herramientas concretas</b><span class="body">Cierto: la v1 no decía con qué construir cada agente. Corregido — cada tarjeta ahora trae su stack y la sección de arriba define las 3 capas (Claude = cerebro, Make = manos, IA generativa = producción).</span></div></div>
+    <div class="check"><span class="verdict no">FALTABA</span><div><b>Test de retrieval</b><span class="body">Al crear cada Proyecto (y el de cada cliente nuevo en el onboarding), correr la prueba: "Según la guía de voz del proyecto, ¿cómo abro un post? Cita la guía exacta". Si responde genérico, el archivo no se está leyendo. Es paso obligatorio del Agente 07.</span></div></div>
+    <div class="check"><span class="verdict no">FALTABA</span><div><b>Mantenimiento</b><span class="body">Conocimiento viejo = contexto confiadamente equivocado. Se asigna al Agente 0 + humano: revisar instrucciones cada trimestre y reemplazar documentos cuando cambie el posicionamiento, un precio o un alcance.</span></div></div>
+    <div class="check"><span class="verdict half">A MEDIAS</span><div><b>Capas de personalización</b><span class="body">Preferencias generales tuyas → instrucciones de perfil (una sola vez). Contexto de cada rol o cliente → instrucciones del Proyecto. Ajustes de un solo chat → estilos. No repetir lo universal en cada proyecto.</span></div></div>
+  </div>
+</section>
+
+<!-- ═══════════ REGLAS ═══════════ -->
+<section class="rules">
+  <h2>Reglas del flujo</h2>
+  <p class="phase-sub">Las condiciones que hacen que los handoffs funcionen sin supervisión constante.</p>
+  <div class="rules-grid">
+    <div class="rule"><b>Nada avanza sin su entregable</b>Cada agente arranca solo cuando recibe la salida completa del anterior; si falta algo, la devuelve con la lista de faltantes.</div>
+    <div class="rule"><b>El CRM es la fuente de verdad</b>Todo lead, cliente y proyecto vive en el tablero central con su etapa actual. Los agentes leen y escriben ahí, nunca en canales sueltos.</div>
+    <div class="rule"><b>Todo handoff deja registro</b>Qué se entregó, cuándo y a quién. El Orquestador audita esto para detectar cuellos de botella.</div>
+    <div class="rule"><b>El humano aprueba lo irreversible</b>Precios fuera de tarifario, contratos, primer contenido de cada cliente, presupuestos de pauta y comunicación de crisis.</div>
+  </div>
+</section>
+
+<!-- ═══════════ PRIORIDAD ═══════════ -->
+<section class="prio">
+  <h2>Orden de implementación</h2>
+  <p class="phase-sub">No construyas los 16 a la vez. Orden por retorno inmediato:</p>
+  <div class="prio-table">
+    <div class="prio-row head"><span>#</span><span>Agentes</span><span class="prio-why">Por qué primero</span></div>
+    <div class="prio-row"><span class="prio-n">1</span><span class="prio-agents">03 Calificador + 07 Onboarding</span><span class="prio-why">Los que más tiempo manual consumen hoy; se resuelven con chatbot (WhatsApp + Claude API) + formularios (Tally + Make).</span></div>
+    <div class="prio-row"><span class="prio-n">2</span><span class="prio-agents">01 Prospector + 02 Outreach</span><span class="prio-why">Llenan el embudo — sin leads no hay agencia. Apify + Claude + Make.</span></div>
+    <div class="prio-row"><span class="prio-n">3</span><span class="prio-agents">05 Propuestas + 06 Cierre</span><span class="prio-why">Acortan el ciclo de venta a menos de una semana. Claude Project + Stripe + Make.</span></div>
+    <div class="prio-row"><span class="prio-n">4</span><span class="prio-agents">09 Contenido + 10 Diseño + 12 Publicación</span><span class="prio-why">Entrega recurrente: Claude Project por cliente + Nano Banana 2 Lite + Omni Flash + Metricool.</span></div>
+    <div class="prio-row"><span class="prio-n">5</span><span class="prio-agents">14 Analítica + 15 Éxito del Cliente</span><span class="prio-why">Retención y crecimiento: Make + Looker Studio + Claude.</span></div>
+    <div class="prio-row"><span class="prio-n">6</span><span class="prio-agents">00 Orquestador + 04 Diagnóstico + 08 Estratega + 11 Automatización + 13 QA</span><span class="prio-why">Al inicio estos roles los cubre el humano; se automatizan al crecer el volumen.</span></div>
+  </div>
+</section>
+
+<footer>AMDA · Workflow de agentes · v2 — ahora con stack por agente, modelos de IA para producción y metodología Claude Projects. Fuentes de los modelos: <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni-flash-nano-banana-2-lite/">anuncio Nano Banana 2 Lite + Omni Flash</a> · <a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-omni/">anuncio Gemini Omni</a>.</footer>
+</div>
