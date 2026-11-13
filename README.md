@@ -1,11 +1,11 @@
 ﻿# 🏛️ PROMPT AGENT — Multi-Agent Marketing Agency & Weekly Intelligence Pipeline
 
-[![Architecture: 13 Autonomous Agents](https://img.shields.io/badge/Agents-13%20Specialists-00f0ff?style=flat-square)](#)
+[![Architecture: 14 Specialist Roles](https://img.shields.io/badge/Roles-14%20Specialists-00f0ff?style=flat-square)](#)
 [![Orchestrator: n8n](https://img.shields.io/badge/Orchestrator-n8n%20v1.0-ff6d5a?style=flat-square)](#)
 [![AI Engine: Google Gemini 3](https://img.shields.io/badge/AI%20Engine-Gemini%203%20Pro-4285f4?style=flat-square)](#)
 [![License: MIT](https://img.shields.io/badge/License-MIT-10b981?style=flat-square)](#)
 
-> **Autonomous growth, intelligence, and content engine.** Combines **n8n Stateful Workflows**, **Google Gemini 3 Pro Reasoning Models**, **Notion DB & Obsidian Knowledge Bases**, and **Code-to-Video (HyperFrames)** to research, produce, and distribute commercial marketing assets on autopilot every Friday at 4:00 PM.
+> **Autonomous growth, intelligence, and content engine.** Combines **n8n Stateful Workflows**, **Google Gemini 3 Pro Reasoning Models**, **Notion DB & Obsidian Knowledge Bases**, and a **HyperFrames shot-list builder** for the 60s video package to research, produce, and distribute commercial marketing assets on autopilot every Friday at 4:00 PM.
 
 ---
 
@@ -35,7 +35,9 @@ Every Friday at 4:00 PM, the system will:
 
 ---
 
-## 👥 The 13 Specialized Subagents
+## 👥 The 14 Documented Specialist Roles
+
+> **How the roles map to the workflow:** these 14 roles are the documented operating model (see `docs/AMDA-WORKFLOW-AGENTES.md`). The importable n8n workflow (`workflows/n8n_workflow_PROMPT_AGENT_v1.json`) implements them through **3 agent nodes** — AI Research Agent, Content Factory, Video Director — plus code nodes for the Top-5 ranker and the editorial QA gate, a Notion sync step, and a Telegram human-approval step. Individual roles live as prompts and responsibilities inside those nodes, not as separate n8n nodes.
 
 | Subagent | Role | Core Responsibility |
 | :--- | :--- | :--- |
@@ -69,7 +71,8 @@ Every Friday at 4:00 PM, the system will:
 │   ├── infografia_roadmap_xai.html                  # Interactive roadmap HUD
 │   └── recursos_y_stack_form.html                   # 1-Click stack configurator
 ├── scripts/
-│   └── render_video_hyperframes.js                  # Code-to-video programmatic engine
+│   ├── render_video_hyperframes.js                  # HyperFrames shot-list builder (pre-production; does not render MP4)
+│   └── smoke_test.js                                # Validates the workflow JSON, connections, and .env.example (npm test)
 ├── .env.example
 ├── .gitignore
 ├── package.json
@@ -86,6 +89,17 @@ Every Friday at 4:00 PM, the system will:
 
 ---
 
+## ✅ Tests
+
+```bash
+npm test
+```
+
+Runs `scripts/smoke_test.js` (Node only, no credentials needed). It checks that the n8n workflow file parses, that the expected nodes exist with the expected types, that every connection target resolves to a node, and that `.env.example` documents the keys the workflow needs.
+
+---
+
 ## 📄 License
 MIT © 2026 PROMPT AGENT & Marketing Systems.
+
 
